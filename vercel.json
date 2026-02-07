@@ -1,9 +1,7 @@
 {
   "name": "aicontentsite",
   "version": 2,
-  "framework": null,
-  "buildCommand": "cd website && npm install && npx hexo generate",
-  "outputDirectory": "website/public",
-  "installCommand": "cd website && npm install --registry=https://registry.npmmirror.com",
-  "devCommand": "cd website && npm run dev"
+  "buildCommand": "echo 'Static site - no build needed'",
+  "outputDirectory": "simple",
+  "installCommand": "echo 'No install needed'"
 }
