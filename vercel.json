@@ -1,5 +1,5 @@
 {
-  "name": "aicontentsite",
+  "name": "ai-tech-hub",
   "version": 2,
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": "simple",
