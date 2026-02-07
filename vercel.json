@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "cd website && npm install && npm run build",
   "outputDirectory": "website/public",
-  "framework": "static",
+  "framework": null,
   "installCommand": "cd website && npm install",
   "devCommand": "cd website && npm run dev",
   "github": {
