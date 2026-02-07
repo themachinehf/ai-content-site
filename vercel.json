@@ -2,7 +2,7 @@
   "name": "aicontentsite",
   "version": 2,
   "buildCommand": "cd website && npm install && npx hexo generate",
-  "outputDirectory": "website/public",
+  "outputDirectory": "public",
   "framework": null,
   "installCommand": "cd website && npm install --registry=https://registry.npmmirror.com",
   "devCommand": "cd website && npm run dev",
