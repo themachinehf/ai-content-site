@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to RAG Systems with LangChain | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Introduction to RAG Systems with LangChain</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Introduction to RAG Systems with LangChain</h1>
+<p>Retrieval-Augmented Generation (RAG) combines the power of retrieval systems with large language models to create more accurate and context-aware AI applications. This guide will walk you through building RAG systems using LangChain.</p>
+<h2>What is RAG?</h2>
+<p>RAG addresses several key challenges with LLMs:</p>
+<ul>
+<li><strong>Knowledge Cutoff</strong>: LLMs have a knowledge cutoff date and can&#39;t access recent information</li>
+<li><strong>Hallucination</strong>: LLMs can generate plausible but incorrect information</li>
+<li><strong>Domain Knowledge</strong>: General LLMs lack specialized domain knowledge</li>
+</ul>
+<p>RAG solves these by:</p>
+<ol>
+<li>Retrieving relevant documents from a knowledge base</li>
+<li>Augmenting the LLM prompt with retrieved context</li>
+<li>Generating responses grounded in retrieved information</li>
+</ol>
+<h2>Setting Up LangChain</h2>
+<pre><code class="language-bash">pip install langchain langchain-openai langchain-community pymilvus sentence-transformers
+</code></pre>
+<h2>Building a Basic RAG Pipeline</h2>
+<h3>1. Document Loading</h3>
+<pre><code class="language-python">from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import DirectoryLoader
+
+# Load individual documents
+loader = PyPDFLoader(&quot;manual.pdf&quot;)
+documents = loader.load()
+
+# Load all documents from a directory
+loader = DirectoryLoader(
+    path=&quot;./docs&quot;,
+    glob=&quot;**/*.pdf&quot;,
+    loader_cls=PyPDFLoader
+)
+documents = loader.load()
+</code></pre>
+<h3>2. Text Splitting</h3>
+<pre><code class="language-python">from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# Split documents into chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200,
+    separators=[&quot;\n\n&quot;, &quot;\n&quot;, &quot; &quot;, &quot;&quot;]
+)
+
+chunks = text_splitter.split_documents(documents)
+</code></pre>
+<h3>3. Creating Embeddings</h3>
+<pre><code class="language-python">from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+
+# Using OpenAI embeddings
+embeddings = OpenAIEmbeddings(model=&quot;text-embedding-3-small&quot;)
+
+# Using HuggingFace embeddings (free alternative)
+embeddings = HuggingFaceEmbeddings(
+    model_name=&quot;sentence-transformers/all-MiniLM-L6-v2&quot;
+)
+</code></pre>
+<h3>4. Vector Store Setup</h3>
+<pre><code class="language-python">from langchain_community.vectorstores import Chroma, Milvus, FAISS
+
+# Using Chroma (localvectorstore = Chroma, file-based)
+.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory=&quot;./chroma_db&quot;
+)
+
+# Using FAISS (local, in-memory)
+vectorstore = FAISS.from_documents(
+    documents=chunks,
+    embedding=embeddings
+)
+
+# Using Milvus (production, distributed)
+from langchain_community.vectorstores import Milvus
+vectorstore = Milvus.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    connection_args={&quot;host&quot;: &quot;localhost&quot;, &quot;port&quot;: &quot;19530&quot;},
+    index_params={&quot;index_type&quot;: &quot;IVF_FLAT&quot;, &quot;metric_type&quot;: &quot;COSINE&quot;}
+)
+</code></pre>
+<h3>5. Creating the Retriever</h3>
+<pre><code class="language-python"># Basic similarity search retriever
+retriever = vectorstore.as_retriever(
+    search_type=&quot;similarity&quot;,
+    search_kwargs={&quot;k&quot;: 4}
+)
+
+# MMR (Maximum Marginal Relevance) retriever
+retriever = vectorstore.as_retriever(
+    search_type=&quot;mmr&quot;,
+    search_kwargs={
+        &quot;k&quot;: 4,
+        &quot;fetch_k&quot;: 10,
+        &quot;lambda_mult&quot;: 0.5
+    }
+)
+</code></pre>
+<h3>6. Building the RAG Chain</h3>
+<pre><code class="language-python">from langchain_openai import ChatOpenAI
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+
+# Define the prompt template
+prompt_template = &quot;&quot;&quot;Use the following context to answer the question. 
+If you don&#39;t know the answer, say you don&#39;t know.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:&quot;&quot;&quot;
+
+PROMPT = PromptTemplate(
+    template=prompt_template,
+    input_variables=[&quot;context&quot;, &quot;question&quot;]
+)
+
+# Create the LLM
+llm = ChatOpenAI(
+    model=&quot;gpt-4&quot;,
+    temperature=0,
+    max_tokens=1000
+)
+
+# Build the RAG chain
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type=&quot;stuff&quot;,
+    retriever=retriever,
+    chain_type_kwargs={&quot;prompt&quot;: PROMPT}
+)
+
+# Use the chain
+result = qa_chain.invoke({&quot;query&quot;: &quot;What is the main topic of the documents?&quot;})
+print(result[&quot;result&quot;])
+</code></pre>
+<h2>Advanced RAG Patterns</h2>
+<h3>Multi-Query Retrieval</h3>
+<pre><code class="language-python">from langchain.retrievers.multi_query import MultiQueryRetriever
+
+multi_query_retriever = MultiQueryRetriever.from_llm(
+    retriever=vectorstore.as_retriever(),
+    llm=llm
+)
+
+# Generate multiple queries and retrieve all results
+retrieved_docs = multi_query_retriever.invoke(&quot;How to optimize queries?&quot;)
+</code></pre>
+<h3>Ensemble Retrieval</h3>
+<pre><code class="language-python">from langchain.retrievers import EnsembleRetriever
+
+# Combine multiple retrievers
+faiss_retriever = faiss_vectorstore.as_retriever(k=4)
+chroma_retriever = chroma_vectorstore.as_retriever(k=4)
+
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[faiss_retriever, chroma_retriever],
+    weights=[0.5, 0.5]
+)
+</code></pre>
+<h3>Contextual Compression</h3>
+<pre><code class="language-python">from langchain.retrievers import ContextualCompressionRetriever
+from langchain_openai import OpenAI
+from langchain_community.document_compressors import LLMChainExtractor
+
+llm_compressor = OpenAI(temperature=0)
+
+compressor = LLMChainExtractor.from_llm(llm_compressor)
+
+compression_retriever = ContextualCompressionRetriever(
+    base_retriever=vectorstore.as_retriever(),
+    document_compressor=compressor
+)
+
+compressed_docs = compression_retriever.invoke(&quot;your query&quot;)
+</code></pre>
+<h3>Parent Document Retrieval</h3>
+<pre><code class="language-python">from langchain.retrievers import ParentDocumentRetriever
+from langchain.storage import InMemoryStore
+
+store = InMemoryStore()
+child_splitter = RecursiveCharacterTextSplitter(chunk_size=400)
+parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
+
+parent_retriever = ParentDocumentRetriever(
+    vectorstore=vectorstore,
+    docstore=store,
+    child_splitter=child_splitter,
+    parent_splitter=parent_splitter,
+)
+</code></pre>
+<h2>Building a Complete RAG Application</h2>
+<pre><code class="language-python">from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+import os
+
+class RAGSystem:
+    def __init__(self, data_dir=&quot;./data&quot;, persist_dir=&quot;./chroma_db&quot;):
+        self.data_dir = data_dir
+        self.persist_dir = persist_dir
+        self.embeddings = OpenAIEmbeddings()
+        self.llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0)
+        
+    def load_documents(self):
+        &quot;&quot;&quot;Load all documents from the data directory.&quot;&quot;&quot;
+        loader = DirectoryLoader(
+            self.data_dir,
+            glob=&quot;**/*.txt&quot;,
+            loader_cls=TextLoader
+        )
+        return loader.load()
+    
+    def create_vectorstore(self, documents=None):
+        &quot;&quot;&quot;Create or load the vector store.&quot;&quot;&quot;
+        if os.path.exists(os.path.join(self.persist_dir, &quot;chroma-collections.parquet&quot;)):
+            # Load existing vector store
+            self.vectorstore = Chroma(
+                persist_directory=self.persist_dir,
+                embedding_function=self.embeddings
+            )
+        else:
+            # Create new vector store
+            if documents is None:
+                documents = self.load_documents()
+            
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000,
+                chunk_overlap=200
+            )
+            chunks = text_splitter.split_documents(documents)
+            
+            self.vectorstore = Chroma.from_documents(
+                documents=chunks,
+                embedding=self.embeddings,
+                persist_directory=self.persist_dir
+            )
+        
+        return self.vectorstore
+    
+    def setup_chain(self):
+        &quot;&quot;&quot;Set up the RAG chain.&quot;&quot;&quot;
+        prompt_template = &quot;&quot;&quot;Use the following context to answer the question.
+        If the answer is not in the context, say &quot;I don&#39;t have enough information to answer that question.&quot;
+
+        Context:
+        {context}
+
+        Question: {question}
+
+        Answer:&quot;&quot;&quot;
+        
+        PROMPT = PromptTemplate(
+            template=prompt_template,
+            input_variables=[&quot;context&quot;, &quot;question&quot;]
+        )
+        
+        self.chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type=&quot;stuff&quot;,
+            retriever=self.vectorstore.as_retriever(),
+            chain_type_kwargs={&quot;prompt&quot;: PROMPT}
+        )
+    
+    def query(self, question: str) -&gt; str:
+        &quot;&quot;&quot;Query the RAG system.&quot;&quot;&quot;
+        result = self.chain.invoke({&quot;query&quot;: question})
+        return result[&quot;result&quot;]
+    
+    def query_with_sources(self, question: str) -&gt; dict:
+        &quot;&quot;&quot;Query and return answer with source documents.&quot;&quot;&quot;
+        result = self.chain.invoke({&quot;query&quot;: question})
+        
+        return {
+            &quot;answer&quot;: result[&quot;result&quot;],
+            &quot;sources&quot;: [doc.metadata for doc in result[&quot;source_documents&quot;]]
+        }
+
+# Usage
+if __name__ == &quot;__main__&quot;:
+    rag = RAGSystem(data_dir=&quot;./knowledge_base&quot;)
+    rag.create_vectorstore()
+    rag.setup_chain()
+    
+    response = rag.query_with_sources(&quot;What are the main features of our product?&quot;)
+    print(f&quot;Answer: {response[&#39;answer&#39;]}&quot;)
+    print(f&quot;Sources: {response[&#39;sources&#39;]}&quot;)
+</code></pre>
+<h2>Production Considerations</h2>
+<ol>
+<li><strong>Indexing Pipeline</strong>: Automate document ingestion with monitoring</li>
+<li><strong>Caching</strong>: Cache frequent queries and embeddings</li>
+<li><strong>Monitoring</strong>: Track retrieval quality and response relevance</li>
+<li><strong>Updates</strong>: Implement periodic knowledge base updates</li>
+<li><strong>Security</strong>: Add access controls and audit logging</li>
+</ol>
+<h2>Conclusion</h2>
+<p>RAG systems with LangChain provide a powerful way to build AI applications that can access and reason over large knowledge bases. Start with a basic setup, then iteratively improve retrieval quality and add advanced features as needed.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

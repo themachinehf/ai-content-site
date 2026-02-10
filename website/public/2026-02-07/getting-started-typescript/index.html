@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with TypeScript | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Getting Started with TypeScript</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Getting Started with TypeScript</h1>
+<p>TypeScript has become the industry standard for building scalable JavaScript applications. This comprehensive guide covers everything you need to know.</p>
+<h2>Why TypeScript?</h2>
+<p>TypeScript offers several key advantages:</p>
+<ul>
+<li><strong>Static Type Checking</strong>: Catch errors at compile time</li>
+<li><strong>Better IDE Support</strong>: Improved autocomplete and refactoring</li>
+<li><strong>Safer Refactoring</strong>: Type safety makes changes easier</li>
+<li><strong>Modern Features</strong>: Access to latest JavaScript features</li>
+</ul>
+<h2>Installation and Setup</h2>
+<pre><code class="language-bash"># Install TypeScript globally
+npm install -g typescript
+
+# Create a new project
+mkdir my-typescript-app
+cd my-typescript-app
+npm init -y
+npm install typescript --save-dev
+
+# Initialize TypeScript config
+npx tsc --init
+</code></pre>
+<h3>tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;target&quot;: &quot;ES2020&quot;,
+    &quot;module&quot;: &quot;ESNext&quot;,
+    &quot;moduleResolution&quot;: &quot;node&quot;,
+    &quot;strict&quot;: true,
+    &quot;esModuleInterop&quot;: true,
+    &quot;skipLibCheck&quot;: true,
+    &quot;forceConsistentCasingInFileNames&quot;: true,
+    &quot;outDir&quot;: &quot;./dist&quot;,
+    &quot;rootDir&quot;: &quot;./src&quot;,
+    &quot;declaration&quot;: true,
+    &quot;declarationMap&quot;: true,
+    &quot;sourceMap&quot;: true
+  },
+  &quot;include&quot;: [&quot;src/**/*&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;dist&quot;]
+}
+</code></pre>
+<h2>Basic Types</h2>
+<pre><code class="language-typescript">// Primitive types
+let name: string = &quot;John&quot;;
+let age: number = 30;
+let isActive: boolean = true;
+
+// Arrays
+let numbers: number[] = [1, 2, 3, 4, 5];
+let names: Array&lt;string&gt; = [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;];
+
+// Tuples
+let person: [string, number, boolean] = [&quot;John&quot;, 30, true];
+let coordinates: [number, number] = [10, 20];
+
+// Enums
+enum Status {
+  Pending = &quot;PENDING&quot;,
+  Active = &quot;ACTIVE&quot;,
+  Completed = &quot;COMPLETED&quot;,
+  Failed = &quot;FAILED&quot;
+}
+
+let currentStatus: Status = Status.Active;
+
+// Any, Unknown, Void, Null, Undefined
+let anything: any = &quot;could be anything&quot;;
+let unknownValue: unknown = &quot;not sure yet&quot;;
+function logMessage(): void {
+  console.log(&quot;This function returns nothing&quot;);
+}
+let nullValue: null = null;
+let undefinedValue: undefined = undefined;
+</code></pre>
+<h2>Object Types and Interfaces</h2>
+<pre><code class="language-typescript">// Interface
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number; // Optional property
+  readonly createdAt: Date; // Read-only property
+}
+
+// Type alias
+type Point = {
+  x: number;
+  y: number;
+};
+
+// Interface extending
+interface Admin extends User {
+  permissions: string[];
+  role: &quot;admin&quot; | &quot;superadmin&quot;;
+}
+
+// Class implementing interface
+class UserManager implements User {
+  id: number;
+  name: string;
+  email: string;
+  readonly createdAt: Date;
+  
+  constructor(id: number, name: string, email: string) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.createdAt = new Date();
+  }
+  
+  greet(): string {
+    return `Hello, ${this.name}!`;
+  }
+}
+</code></pre>
+<h2>Function Types</h2>
+<pre><code class="language-typescript">// Basic function
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+// Arrow function
+const multiply = (a: number, b: number): number =&gt; a * b;
+
+// Optional parameters
+function greet(name: string, greeting?: string): string {
+  return `${greeting || &quot;Hello&quot;}, ${name}!`;
+}
+
+// Default parameters
+function createUser(name: string, role: string = &quot;user&quot;): User {
+  return { id: 0, name, email: `${name.toLowerCase()}@example.com`, role };
+}
+
+// Rest parameters
+function sum(...numbers: number[]): number {
+  return numbers.reduce((acc, num) =&gt; acc + num, 0);
+}
+
+// Function types
+type MathOperation = (a: number, b: number) =&gt; number;
+
+const calculate = (operation: MathOperation, a: number, b: number): number =&gt; {
+  return operation(a, b);
+};
+
+// Callback types
+function processItems&lt;T&gt;(items: T[], callback: (item: T, index: number) =&gt; void): void {
+  items.forEach(callback);
+}
+</code></pre>
+<h2>Generics</h2>
+<pre><code class="language-typescript">// Generic function
+function identity&lt;T&gt;(value: T): T {
+  return value;
+}
+
+// Generic interface
+interface Repository&lt;T, ID&gt; {
+  findById(id: ID): T | null;
+  findAll(): T[];
+  save(entity: T): T;
+  delete(id: ID): boolean;
+}
+
+// Generic class
+class DataStore&lt;T&gt; {
+  private items: T[] = [];
+  
+  add(item: T): void {
+    this.items.push(item);
+  }
+  
+  get(index: number): T | undefined {
+    return this.items[index];
+  }
+  
+  getAll(): T[] {
+    return [...this.items];
+  }
+  
+  filter&lt;U&gt;(predicate: (item: T) =&gt; item is U): U[] {
+    return this.items.filter(predicate);
+  }
+}
+
+// Generic constraints
+function getLength&lt;T extends { length: number }&gt;(item: T): number {
+  return item.length;
+}
+
+interface HasName {
+  name: string;
+}
+
+function greetEntity&lt;T extends HasName&gt;(entity: T): string {
+  return `Hello, ${entity.name}!`;
+}
+</code></pre>
+<h2>Advanced Types</h2>
+<pre><code class="language-typescript">// Union types
+type ID = number | string;
+type StatusCode = 200 | 400 | 404 | 500;
+
+// Intersection types
+type Employee = {
+  id: number;
+  name: string;
+};
+
+type Department = {
+  deptName: string;
+  budget: number;
+};
+
+type EmployeeWithDept = Employee &amp; Department;
+
+// Literal types
+type Direction = &quot;north&quot; | &quot;south&quot; | &quot;east&quot; | &quot;west&quot;;
+type DiceRoll = 1 | 2 | 3 | 4 | 5 | 6;
+
+// Type guards
+function isString(value: unknown): value is string {
+  return typeof value === &quot;string&quot;;
+}
+
+function processValue(value: string | number) {
+  if (isString(value)) {
+    return value.toUpperCase();
+  }
+  return value * 2;
+}
+
+// Mapped types
+type Partial&lt;T&gt; = {
+  [P in keyof T]?: T[P];
+};
+
+type Readonly&lt;T&gt; = {
+  readonly [P in keyof T]: T[P];
+};
+
+type Pick&lt;T, K extends keyof T&gt; = {
+  [P in K]: T[P];
+};
+
+// Utility types
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+type PublicUser = Omit&lt;User, &quot;password&quot;&gt;;
+type UserPreview = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;
+type OptionalUser = Partial&lt;User&gt;;
+type ImmutableUser = Readonly&lt;User&gt;;
+</code></pre>
+<h2>Classes and Modules</h2>
+<pre><code class="language-typescript">// Abstract class
+abstract class Animal {
+  constructor(public name: string) {}
+  
+  abstract makeSound(): void;
+  
+  move(): void {
+    console.log(`${this.name} is moving`);
+  }
+}
+
+class Dog extends Animal {
+  makeSound(): void {
+    console.log(&quot;Woof!&quot;);
+  }
+}
+
+// Module exports
+// math.ts
+export function add(a: number, b: number): number {
+  return a + b;
+}
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export default class Calculator {
+  // Default export
+}
+
+// Importing
+import Calculator, { add, Point } from &quot;./math&quot;;
+</code></pre>
+<h2>Decorators</h2>
+<pre><code class="language-typescript">// Class decorator
+function sealed(constructor: Function) {
+  Object.seal(constructor);
+  Object.seal(constructor.prototype);
+}
+
+// Method decorator
+function logMethod(
+  target: Object,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+): PropertyDescriptor {
+  const originalMethod = descriptor.value;
+  
+  descriptor.value = function (...args: unknown[]) {
+    console.log(`Calling ${propertyKey} with args:`, args);
+    const result = originalMethod.apply(this, args);
+    console.log(`Method ${propertyKey} returned:`, result);
+    return result;
+  };
+  
+  return descriptor;
+}
+
+// Property decorator
+function readonly(target: Object, propertyKey: string) {
+  Object.defineProperty(target, propertyKey, {
+    writable: false,
+    configurable: false
+  });
+}
+
+@sealed
+class UserService {
+  @readonly
+  static VERSION = &quot;1.0&quot;;
+  
+  @logMethod
+  getUser(id: number): User {
+    return { id, name: &quot;John&quot; };
+  }
+}
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Enable Strict Mode</strong>: Always use <code>&quot;strict&quot;: true</code></li>
+<li><strong>Avoid any</strong>: Use <code>unknown</code> for truly unknown types</li>
+<li><strong>Use Interfaces for Objects</strong>: Prefer interfaces over type aliases for objects</li>
+<li><strong>Leverage Generics</strong>: Write reusable, type-safe code</li>
+<li><strong>Use Utility Types</strong>: Leverage built-in utility types</li>
+<li><strong>Document Complex Types</strong>: Add JSDoc comments for complex types</li>
+<li><strong>Enable noImplicitAny</strong>: Catch implicit any types</li>
+</ol>
+<h2>Conclusion</h2>
+<p>TypeScript provides a powerful type system that helps build maintainable, scalable JavaScript applications. Start with basic types and gradually explore more advanced features as your projects grow.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

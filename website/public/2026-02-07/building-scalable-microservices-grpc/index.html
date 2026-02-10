@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Scalable Microservices with gRPC | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Building Scalable Microservices with gRPC</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Building Scalable Microservices with gRPC</h1>
+<p>gRPC is a high-performance, open-source remote procedure call (RPC) framework developed by Google. It uses HTTP/2 for transport and Protocol Buffers as the interface definition language.</p>
+<h2>Why gRPC?</h2>
+<p>gRPC offers several advantages over traditional REST APIs:</p>
+<ul>
+<li><strong>Performance</strong>: HTTP/2 and Protocol Buffers enable faster serialization</li>
+<li><strong>Type Safety</strong>: Strongly typed contracts via .proto files</li>
+<li><strong>Bidirectional Streaming</strong>: Real-time communication capabilities</li>
+<li><strong>Code Generation</strong>: Automatic client/server code generation</li>
+<li><strong>Authentication</strong>: Built-in support for TLS and token-based auth</li>
+</ul>
+<h2>Setting Up Your Environment</h2>
+<p>First, install the required tools:</p>
+<pre><code class="language-bash"># Install Protocol Buffers compiler
+brew install protobuf  # macOS
+sudo apt-get install -y protobuf-compiler  # Linux
+
+# Install Go plugins
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+</code></pre>
+<h2>Defining Your Service with Protocol Buffers</h2>
+<p>Create a <code>.proto</code> file to define your service contract:</p>
+<pre><code class="language-protobuf">syntax = &quot;proto3&quot;;
+
+package user;
+
+option go_package = &quot;github.com/example/user-service/proto&quot;;
+
+// The User service definition
+service UserService {
+  // Create a new user
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
+  
+  // Get user by ID
+  rpc GetUser(GetUserRequest) returns (UserResponse);
+  
+  // List all users with pagination
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  
+  // Bidirectional streaming for bulk operations
+  rpc StreamUsers(stream UserOperation) returns (stream UserResponse);
+}
+
+// User message definition
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  int64 created_at = 4;
+  int64 updated_at = 5;
+}
+
+// Request/Response messages
+message CreateUserRequest {
+  string email = 1;
+  string name = 2;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message UserResponse {
+  User user = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message ListUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  int32 total = 2;
+}
+
+message UserOperation {
+  string user_id = 1;
+  string operation = 2;
+}
+</code></pre>
+<h2>Generating Go Code</h2>
+<p>Generate the Go code from your <code>.proto</code> file:</p>
+<pre><code class="language-bash">protoc --go_out=. --go_opt=paths=source_relative \
+       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+       proto/user.proto
+</code></pre>
+<h2>Implementing the gRPC Server</h2>
+<pre><code class="language-go">package main
+
+import (
+    &quot;context&quot;
+    &quot;database/sql&quot;
+    &quot;errors&quot;
+    &quot;fmt&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+    
+    &quot;google.golang.org/grpc&quot;
+    &quot;google.golang.org/grpc/codes&quot;
+    &quot;google.golang.org/grpc/status&quot;
+    
+    &quot;github.com/example/user-service/proto&quot;
+    &quot;github.com/example/user-service/repository&quot;
+)
+
+type UserServer struct {
+    proto.UnimplementedUserServiceServer
+    db *repository.UserRepository
+}
+
+func NewUserServer(db *repository.UserRepository) *UserServer {
+    return &amp;UserServer{db: db}
+}
+
+func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserRequest) (*proto.UserResponse, error) {
+    if req.Email == &quot;&quot; || req.Name == &quot;&quot; {
+        return nil, status.Error(codes.InvalidArgument, &quot;email and name are required&quot;)
+    }
+    
+    user, err := s.db.Create(ctx, req.Email, req.Name)
+    if err != nil {
+        return nil, status.Error(codes.Internal, err.Error())
+    }
+    
+    return &amp;proto.UserResponse{
+        User:    user.ToProto(),
+        Success: true,
+        Message: &quot;User created successfully&quot;,
+    }, nil
+}
+
+func (s *UserServer) GetUser(ctx context.Context, req *proto.GetUserRequest) (*proto.UserResponse, error) {
+    user, err := s.db.GetByID(ctx, req.Id)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, status.Error(codes.NotFound, &quot;user not found&quot;)
+        }
+        return nil, status.Error(codes.Internal, err.Error())
+    }
+    
+    return &amp;proto.UserResponse{
+        User:    user.ToProto(),
+        Success: true,
+    }, nil
+}
+
+func (s *UserServer) ListUsers(ctx context.Context, req *proto.ListUsersRequest) (*proto.ListUsersResponse, error) {
+    users, total, err := s.db.List(ctx, int(req.Page), int(req.PageSize))
+    if err != nil {
+        return nil, status.Error(codes.Internal, err.Error())
+    }
+    
+    protoUsers := make([]*proto.User, len(users))
+    for i, u := range users {
+        protoUsers[i] = u.ToProto()
+    }
+    
+    return &amp;proto.ListUsersResponse{
+        Users: protoUsers,
+        Total: int32(total),
+    }, nil
+}
+
+func (s *UserServer) StreamUsers(stream proto.UserService_StreamUsersServer) error {
+    for {
+        op, err := stream.Recv()
+        if err != nil {
+            if err.Error() == &quot;EOF&quot; {
+                break
+            }
+            return err
+        }
+        
+        switch op.Operation {
+        case &quot;get&quot;:
+            user, err := s.db.GetByID(context.Background(), op.UserId)
+            if err != nil {
+                stream.Send(&amp;proto.UserResponse{
+                    Success: false,
+                    Message: err.Error(),
+                })
+                continue
+            }
+            stream.Send(&amp;proto.UserResponse{
+                User:    user.ToProto(),
+                Success: true,
+            })
+        case &quot;delete&quot;:
+            // Handle delete operation
+        }
+    }
+    return nil
+}
+
+func main() {
+    lis, err := net.Listen(&quot;tcp&quot;, &quot;:50051&quot;)
+    if err != nil {
+        log.Fatalf(&quot;Failed to listen: %v&quot;, err)
+    }
+    
+    db, err := repository.NewUserRepository(&quot;postgresql://...&quot;)
+    if err != nil {
+        log.Fatalf(&quot;Failed to connect to database: %v&quot;, err)
+    }
+    defer db.Close()
+    
+    server := NewUserServer(db)
+    grpcServer := grpc.NewServer(
+        grpc.UnaryInterceptor(loggingInterceptor),
+        grpc.StreamInterceptor(streamLoggingInterceptor),
+    )
+    
+    proto.RegisterUserServiceServer(grpcServer, server)
+    
+    fmt.Println(&quot;gRPC server listening on :50051&quot;)
+    if err := grpcServer.Serve(lis); err != nil {
+        log.Fatalf(&quot;Failed to serve: %v&quot;, err)
+    }
+}
+</code></pre>
+<h2>Implementing the gRPC Client</h2>
+<pre><code class="language-go">package main
+
+import (
+    &quot;context&quot;
+    &quot;log&quot;
+    &quot;time&quot;
+    
+    &quot;google.golang.org/grpc&quot;
+    &quot;google.golang.org/grpc/credentials/insecure&quot;
+    
+    &quot;github.com/example/user-service/proto&quot;
+)
+
+func main() {
+    conn, err := grpc.Dial(&quot;localhost:50051&quot;,
+        grpc.WithTransportCredentials(insecure.NewCredentials()),
+    )
+    if err != nil {
+        log.Fatalf(&quot;Failed to connect: %v&quot;, err)
+    }
+    defer conn.Close()
+    
+    client := proto.NewUserServiceClient(conn)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    
+    // Create a user
+    createResp, err := client.CreateUser(ctx, &amp;proto.CreateUserRequest{
+        Email: &quot;john@example.com&quot;,
+        Name:  &quot;John Doe&quot;,
+    })
+    if err != nil {
+        log.Fatalf(&quot;Failed to create user: %v&quot;, err)
+    }
+    log.Printf(&quot;Created user: %s&quot;, createResp.User.Id)
+    
+    // Get the user
+    getResp, err := client.GetUser(ctx, &amp;proto.GetUserRequest{
+        Id: createResp.User.Id,
+    })
+    if err != nil {
+        log.Fatalf(&quot;Failed to get user: %v&quot;, err)
+    }
+    log.Printf(&quot;Retrieved user: %s&quot;, getResp.User.Name)
+}
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Use streaming wisely</strong>: Only use streaming when you need real-time updates or large datasets</li>
+<li><strong>Implement interceptors</strong>: Add logging, metrics, and authentication interceptors</li>
+<li><strong>Set timeouts</strong>: Always use context timeouts to prevent hanging requests</li>
+<li><strong>Handle errors properly</strong>: Use gRPC status codes correctly</li>
+<li><strong>Version your APIs</strong>: Include version in your proto package path</li>
+</ol>
+<h2>Conclusion</h2>
+<p>gRPC provides a powerful framework for building high-performance microservices. Its support for HTTP/2, strong typing, and code generation makes it an excellent choice for inter-service communication in modern distributed systems.</p>
+<p>Start by defining your service contracts in Protocol Buffers, generate the boilerplate code, and focus on implementing your business logic. The framework handles the rest efficiently and reliably.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

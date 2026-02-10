@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building RAG Applications with LangChain | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Building RAG Applications with LangChain</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Building RAG Applications with LangChain</h1>
+<p>Retrieval-Augmented Generation (RAG) combines the power of LLMs with external knowledge bases. Learn how to build RAG apps using LangChain.</p>
+<h2>What is RAG?</h2>
+<p>RAG addresses key LLM limitations:</p>
+<ul>
+<li><strong>Knowledge cutoff</strong> - LLMs don&#39;t know about recent events</li>
+<li><strong>Hallucination</strong> - Generating incorrect information</li>
+<li><strong>No source attribution</strong> - Can&#39;t cite where information came from</li>
+</ul>
+<h2>Architecture Overview</h2>
+<pre><code>User Query → Retriever → Vector Store → Context → LLM → Response
+             (Embeddings)  (Documents)
+</code></pre>
+<h2>Implementation</h2>
+<h3>Setup</h3>
+<pre><code class="language-python">pip install langchain openai chromadb
+</code></pre>
+<h3>Basic RAG Pipeline</h3>
+<pre><code class="language-python">from langchain.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+
+# Load documents
+loader = TextLoader(&quot;knowledge_base.txt&quot;)
+documents = loader.load()
+
+# Split into chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+chunks = text_splitter.split_documents(documents)
+
+# Create vector store
+embeddings = OpenAIEmbeddings()
+vectorstore = Chroma.from_documents(chunks, embeddings)
+
+# Create retriever
+retriever = vectorstore.as_retriever()
+
+# Create QA chain
+qa_chain = RetrievalQA.from_chain_type(
+    llm=OpenAI(),
+    chain_type=&quot;stuff&quot;,
+    retriever=retriever
+)
+
+# Query
+result = qa_chain({&quot;query&quot;: &quot;What is RAG?&quot;})
+print(result[&quot;result&quot;])
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Chunk size matters</strong> - Experiment with 500-2000 tokens</li>
+<li><strong>Use good embeddings</strong> - OpenAI or Cohere embeddings work well</li>
+<li><strong>Add source citations</strong> - Track which documents were retrieved</li>
+<li><strong>Implement caching</strong> - Reduce API calls for similar queries</li>
+</ol>
+<h2>Conclusion</h2>
+<p>RAG applications bridge the gap between LLMs and your specific knowledge base. Start building today!</p>
+<hr>
+<p><em>Happy building! 🚀</em></p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

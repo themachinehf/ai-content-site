@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE MACHINE | AI Tech Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.5;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        header {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: 4px;
+            color: #00ff00;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #008800;
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+        
+        .time {
+            color: #008800;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+        
+        .section-title {
+            color: #00ff00;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .post {
+            padding: 20px 0;
+            border-bottom: 1px solid #1a3a1a;
+            border-left: 1px solid transparent;
+            padding-left: 16px;
+            margin-left: -16px;
+            transition: all 0.2s;
+        }
+        
+        .post:hover {
+            border-left: 3px solid #00ff00;
+            background: rgba(0, 255, 0, 0.03);
+        }
+        
+        .post-date {
+            color: #006600;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+        
+        .post-title {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin-bottom: 8px;
+        }
+        
+        .post-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .post-title a:hover {
+            text-decoration: underline;
+        }
+        
+        .post-desc {
+            color: #008800;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: #00ff00;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #1a3a1a;
+            color: #004400;
+            font-size: 0.85rem;
+        }
+        
+        a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>THE MACHINE<span class="cursor"></span></h1>
+            <p class="subtitle">// AI TECHNOLOGY HUB</p>
+            <p class="time" id="time"></p>
+        </header>
+        
+        <section>
+            <p class="section-title">> ACTIVE_DATA_STREAMS</p>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/building-ai-agents-langchain/">Building AI Agents with LangChain Agents</a></h2>
+                <p class="post-desc">> AI agents represent the next evolution in LLM applications. Unlike simple chatbots, agents can reason about tasks, plan actions, and execute complex workflows using various tools.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/building-rag-applications/">Building RAG Applications with LangChain</a></h2>
+                <p class="post-desc">> Retrieval-Augmented Generation (RAG) combines the power of LLMs with external knowledge bases. Learn how to build RAG apps using LangChain.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/building-rest-apis-fastapi/">Building REST APIs with FastAPI and Python</a></h2>
+                <p class="post-desc">> FastAPI has become the go-to framework for building high-performance APIs in Python. This guide covers everything from basics to advanced features.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/building-scalable-microservices-grpc/">Building Scalable Microservices with gRPC</a></h2>
+                <p class="post-desc">> gRPC is a high-performance, open-source remote procedure call (RPC) framework developed by Google. It uses HTTP/2 for transport and Protocol Buffers as the interface definition language.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/docker-best-practices-production/">Docker Best Practices for Production</a></h2>
+                <p class="post-desc">> Docker has become the standard for containerizing applications. This guide covers essential best practices for deploying Docker in production environments.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/getting-started-typescript/">Getting Started with TypeScript</a></h2>
+                <p class="post-desc">> TypeScript has become the industry standard for building scalable JavaScript applications. This comprehensive guide covers everything you need to know.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/getting-started-with-python-type-hints/">Getting Started with Python Type Hints</a></h2>
+                <p class="post-desc">> Type hints (also known as type annotations) were introduced in Python 3.5 and have become increasingly important for writing maintainable code.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/git-best-practices/">Git Best Practices for Teams</a></h2>
+                <p class="post-desc">> Good Git practices are essential for smooth team collaboration. Learn the workflows and habits that separate amateur from professional development.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/intro-prompt-engineering/">Introduction to Prompt Engineering</a></h2>
+                <p class="post-desc">> Prompt engineering is the key to unlocking the full potential of large language models. This guide covers techniques and best practices.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/intro-stable-diffusion/">Introduction to Stable Diffusion</a></h2>
+                <p class="post-desc">> Stable Diffusion has revolutionized AI image generation. This guide covers the fundamentals and practical applications.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/introduction-rag-systems-langchain/">Introduction to RAG Systems with LangChain</a></h2>
+                <p class="post-desc">> Retrieval-Augmented Generation (RAG) combines the power of retrieval systems with large language models to create more accurate and context-aware AI applications. This guide will walk you through building RAG systems using LangChain.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/introduction-to-docker/">Introduction to Docker for Developers</a></h2>
+                <p class="post-desc">> Docker has revolutionized how we develop, ship, and run applications. This guide covers essential Docker concepts for developers.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/mastering-javascript-async-await/">Mastering JavaScript Async/Await</a></h2>
+                <p class="post-desc">> Async/await is modern JavaScript's elegant solution to callback hell. Learn how to write clean, readable asynchronous code.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/mastering-python-decorators/">Mastering Python Decorators: A Complete Guide</a></h2>
+                <p class="post-desc">> Python decorators are one of the most powerful and elegant features in the language. They allow you to modify the behavior of functions and classes without directly modifying their source code.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/python-list-comprehensions/">Python List Comprehensions Explained</a></h2>
+                <p class="post-desc">> List comprehensions are a Pythonic way to create lists. Learn how to write concise, readable code using this powerful feature.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/understanding-neural-network-architecture/">Understanding Neural Network Architecture</a></h2>
+                <p class="post-desc">> Neural networks form the foundation of modern AI. This guide explores various architectures and their applications.</p>
+            </article>
+
+            <article class="post">
+                <p class="post-date">[2026-02-07]</p>
+                <h2 class="post-title"><a href="/2026-02-07/understanding-transformer-architecture/">Understanding Transformer Architecture</a></h2>
+                <p class="post-desc">> The Transformer architecture revolutionized NLP and beyond. Learn how it works and why it changed everything.</p>
+            </article>
+
+        </section>
+        
+        <footer>
+            <p>> SYSTEM_OPERATIONAL // MONITORING_ACTIVE</p>
+            <p>> RUNTIME: 2026-02-10</p>
+        </footer>
+    </div>
+    
+    <script>
+        function updateTime() {
+            document.getElementById('time').textContent = '> TIMESTAMP: ' + new Date().toISOString().replace('T', ' ').substring(0, 19);
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

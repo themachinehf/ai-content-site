@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Best Practices for Production | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Docker Best Practices for Production</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Docker Best Practices for Production</h1>
+<p>Docker has become the standard for containerizing applications. This guide covers essential best practices for deploying Docker in production environments.</p>
+<h2>Image Optimization</h2>
+<h3>Use Multi-Stage Builds</h3>
+<p>Multi-stage builds reduce image size by separating build and runtime environments:</p>
+<pre><code class="language-dockerfile"># Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS production
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs &amp;&amp; \
+    adduser -S nodejs -u 1001
+
+# Copy only production dependencies
+COPY --from=builder /app/package*.json ./
+RUN npm ci --only=production &amp;&amp; \
+    npm cache clean --force
+
+# Copy built application
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+# Change ownership
+RUN chown -R nodejs:nodejs /app
+
+USER nodejs
+
+EXPOSE 3000
+CMD [&quot;node&quot;, &quot;dist/index.js&quot;]
+</code></pre>
+<h3>Use Specific Base Image Tags</h3>
+<p>Avoid using the <code>latest</code> tag in production:</p>
+<pre><code class="language-dockerfile"># Good: Specific version
+FROM node:20.10.0-alpine3.19
+
+# Bad: Latest tag (unpredictable)
+FROM node:latest
+</code></pre>
+<h3>Minimize Layers</h3>
+<p>Each instruction creates a layer. Combine related operations:</p>
+<pre><code class="language-dockerfile"># Good: Combined RUN instructions
+RUN apt-get update &amp;&amp; \
+    apt-get install -y --no-install-recommends \
+        curl \
+        ca-certificates \
+        &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# Bad: Multiple RUN instructions
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get install -y ca-certificates
+RUN rm -rf /var/lib/apt/lists/*
+</code></pre>
+<h2>Security Best Practices</h2>
+<h3>Run as Non-Root User</h3>
+<pre><code class="language-dockerfile"># Create and use non-root user
+RUN groupadd -r appgroup &amp;&amp; useradd -r -g appgroup appuser
+USER appuser
+</code></pre>
+<h3>Scan Images for Vulnerabilities</h3>
+<pre><code class="language-bash"># Use Trivy for vulnerability scanning
+trivy image your-image:tag
+
+# Use Snyk
+snyk container test your-image:tag
+</code></pre>
+<h3>Use Secret Management</h3>
+<pre><code class="language-dockerfile"># Don&#39;t hardcode secrets
+# Use build arguments for build-time secrets
+ARG API_KEY
+RUN echo $API_KEY &gt; /app/secret.key
+
+# For runtime secrets, use Docker Swarm secrets or external secrets manager
+</code></pre>
+<h3>Enable Docker Content Trust</h3>
+<pre><code class="language-bash">export DOCKER_CONTENT_TRUST=1
+</code></pre>
+<h2>Health Checks</h2>
+<p>Add health checks to your containers:</p>
+<pre><code class="language-dockerfile">HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+</code></pre>
+<p>For non-HTTP services:</p>
+<pre><code class="language-dockerfile">HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} || exit 1
+</code></pre>
+<h2>Resource Management</h2>
+<h3>Set Memory and CPU Limits</h3>
+<pre><code class="language-yaml"># docker-compose.yml
+services:
+  web:
+    image: your-app:latest
+    deploy:
+      resources:
+        limits:
+          cpus: &#39;2&#39;
+          memory: 2G
+        reservations:
+          cpus: &#39;0.5&#39;
+          memory: 512M
+</code></pre>
+<h3>Use Appropriate Logging Drivers</h3>
+<pre><code class="language-yaml"># docker-compose.yml
+services:
+  app:
+    image: your-app:latest
+    logging:
+      driver: &quot;json-file&quot;
+      options:
+        max-size: &quot;100m&quot;
+        max-file: &quot;3&quot;
+</code></pre>
+<h2>Networking</h2>
+<h3>Use Custom Networks</h3>
+<pre><code class="language-yaml">services:
+  app:
+    image: your-app:latest
+    networks:
+      - app-network
+  
+  db:
+    image: postgres:15
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+</code></pre>
+<h3>Configure Health Checks for Service Discovery</h3>
+<pre><code class="language-yaml">services:
+  app:
+    image: your-app:latest
+    deploy:
+      endpoint_mode: vip
+    
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - app
+</code></pre>
+<h2>Environment Variables</h2>
+<p>Use environment-specific configurations:</p>
+<pre><code class="language-yaml"># docker-compose.prod.yml
+services:
+  app:
+    image: your-app:${TAG:-latest}
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://db:5432/app
+      - REDIS_URL=redis://cache:6379
+    secrets:
+      - api-keys
+    configs:
+      - source: app_config
+        target: /app/config.yaml
+
+secrets:
+  api-keys:
+    file: ./secrets/api-keys.json
+
+configs:
+  app_config:
+    file: ./config/app.prod.yaml
+</code></pre>
+<h2>CI/CD Integration</h2>
+<h3>GitHub Actions Example</h3>
+<pre><code class="language-yaml">name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Run Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: &#39;ghcr.io/${{ github.repository }}:${{ github.sha }}&#39;
+          format: &#39;sarif&#39;
+          output: &#39;trivy-results.sarif&#39;
+      
+      - name: Upload Trivy Results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: &#39;trivy-results.sarif&#39;
+</code></pre>
+<h2>Monitoring and Logging</h2>
+<h3>Add Prometheus Metrics</h3>
+<pre><code class="language-python">from prometheus_client import Counter, Histogram, start_http_server
+
+REQUEST_COUNT = Counter(&#39;http_requests_total&#39;, &#39;Total HTTP requests&#39;)
+REQUEST_LATENCY = Histogram(&#39;http_request_duration_seconds&#39;, &#39;HTTP request latency&#39;)
+
+# Start metrics server
+start_http_server(8000)
+
+@app.route(&#39;/metrics&#39;)
+def metrics():
+    return generate_latest()
+</code></pre>
+<h3>Structured Logging</h3>
+<pre><code class="language-python">import structlog
+
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt=&quot;iso&quot;),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer()
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+)
+
+logger = structlog.get_logger()
+</code></pre>
+<h2>Docker Compose for Production</h2>
+<pre><code class="language-yaml">version: &#39;3.8&#39;
+
+services:
+  app:
+    image: your-app:${IMAGE_TAG:-latest}
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:3000/health&quot;]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: &quot;json-file&quot;
+      options:
+        max-size: &quot;50m&quot;
+        max-file: &quot;5&quot;
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: overlay
+    attachable: true
+</code></pre>
+<h2>Checklist for Production Deployment</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Use multi-stage builds for smaller images</li>
+<li><input disabled="" type="checkbox"> Scan images for vulnerabilities</li>
+<li><input disabled="" type="checkbox"> Run containers as non-root users</li>
+<li><input disabled="" type="checkbox"> Set resource limits (CPU, memory)</li>
+<li><input disabled="" type="checkbox"> Add health checks</li>
+<li><input disabled="" type="checkbox"> Configure logging drivers</li>
+<li><input disabled="" type="checkbox"> Use secrets management</li>
+<li><input disabled="" type="checkbox"> Implement monitoring and metrics</li>
+<li><input disabled="" type="checkbox"> Set up CI/CD pipeline with security scanning</li>
+<li><input disabled="" type="checkbox"> Use specific image tags (not <code>latest</code>)</li>
+<li><input disabled="" type="checkbox"> Configure proper networking</li>
+<li><input disabled="" type="checkbox"> Enable Docker Content Trust</li>
+<li><input disabled="" type="checkbox"> Implement graceful shutdown handling</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Following these Docker best practices will help you build secure, efficient, and maintainable containerized applications. Start with the basics and gradually implement more advanced patterns as your deployment complexity grows.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

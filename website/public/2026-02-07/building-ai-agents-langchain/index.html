@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building AI Agents with LangChain Agents | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Building AI Agents with LangChain Agents</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Building AI Agents with LangChain Agents</h1>
+<p>AI agents represent the next evolution in LLM applications. Unlike simple chatbots, agents can reason about tasks, plan actions, and execute complex workflows using various tools.</p>
+<h2>Understanding AI Agents</h2>
+<p>An AI agent is a system that can:</p>
+<ol>
+<li><strong>Perceive</strong> its environment through inputs and tools</li>
+<li><strong>Reason</strong> about goals and plan actions</li>
+<li><strong>Act</strong> by calling tools and executing tasks</li>
+<li><strong>Learn</strong> from feedback and improve over time</li>
+</ol>
+<p>LangChain provides a comprehensive framework for building such agents.</p>
+<h2>Setting Up Your Environment</h2>
+<pre><code class="language-bash">pip install langchain langchain-openai langchain-community SearXNG-API
+</code></pre>
+<h2>Building Your First Agent</h2>
+<h3>Basic Zero-Shot Agent</h3>
+<pre><code class="language-python">from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from langchain_community.utilities import SerpAPIWrapper
+
+# Initialize the LLM
+llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0)
+
+# Get the prompt template
+prompt = hub.pull(&quot;hwchase17/openai-functions-agent&quot;)
+
+# Define tools for the agent
+search = SerpAPIWrapper()
+
+tools = [
+    {
+        &quot;name&quot;: &quot;search&quot;,
+        &quot;description&quot;: &quot;Useful for when you need to answer questions about current events&quot;,
+        &quot;func&quot;: search.run
+    }
+]
+
+# Create the agent
+agent = create_openai_functions_agent(llm, tools, prompt)
+
+# Create the agent executor
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+# Use the agent
+result = agent_executor.invoke({
+    &quot;input&quot;: &quot;What is the current stock price of Apple?&quot;
+})
+</code></pre>
+<h2>Creating Custom Tools</h2>
+<h3>Building a Custom Tool</h3>
+<pre><code class="language-python">from langchain.tools import tool
+from datetime import datetime
+
+class DateTimeTools:
+    @tool
+    def get_current_date(self) -&gt; str:
+        &quot;&quot;&quot;Returns the current date in YYYY-MM-DD format.&quot;&quot;&quot;
+        return datetime.now().strftime(&quot;%Y-%m-%d&quot;)
+    
+    @tool
+    def get_current_time(self, timezone: str = &quot;UTC&quot;) -&gt; str:
+        &quot;&quot;&quot;Returns the current time for a given timezone.&quot;&quot;&quot;
+        from datetime import timezone as tz
+        if timezone != &quot;UTC&quot;:
+            import pytz
+            try:
+                tz_obj = pytz.timezone(timezone)
+                dt = datetime.now(tz_obj)
+            except pytz.UnknownTimeZoneError:
+                return f&quot;Unknown timezone: {timezone}&quot;
+        else:
+            dt = datetime.now(tz.utc)
+        return dt.strftime(&quot;%H:%M:%S %Z&quot;)
+    
+    @tool
+    def calculate_days_between(self, start_date: str, end_date: str) -&gt; int:
+        &quot;&quot;&quot;Calculate the number of days between two dates (YYYY-MM-DD format).&quot;&quot;&quot;
+        try:
+            start = datetime.strptime(start_date, &quot;%Y-%m-%d&quot;)
+            end = datetime.strptime(end_date, &quot;%Y-%m-%d&quot;)
+            return abs((end - start).days)
+        except ValueError:
+            return -1
+</code></pre>
+<h3>File Operations Tool</h3>
+<pre><code class="language-python">import os
+from pathlib import Path
+from langchain.tools import tool
+
+class FileOperations:
+    @tool
+    def read_file(self, file_path: str) -&gt; str:
+        &quot;&quot;&quot;Read the contents of a file. Returns the file contents or an error message.&quot;&quot;&quot;
+        try:
+            path = Path(file_path)
+            if path.exists() and path.is_file():
+                return path.read_text()
+            return f&quot;File not found: {file_path}&quot;
+        except Exception as e:
+            return f&quot;Error reading file: {str(e)}&quot;
+    
+    @tool
+    def write_file(self, file_path: str, content: str) -&gt; str:
+        &quot;&quot;&quot;Write content to a file. Creates the file if it doesn&#39;t exist.&quot;&quot;&quot;
+        try:
+            path = Path(file_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content)
+            return f&quot;Successfully wrote to {file_path}&quot;
+        except Exception as e:
+            return f&quot;Error writing file: {str(e)}&quot;
+    
+    @tool
+    def list_files(self, directory: str = &quot;.&quot;) -&gt; str:
+        &quot;&quot;&quot;List files in a directory.&quot;&quot;&quot;
+        try:
+            path = Path(directory)
+            if path.exists() and path.is_dir():
+                files = [f.name for f in path.iterdir()]
+                return &quot;\n&quot;.join(files) if files else &quot;Directory is empty&quot;
+            return f&quot;Directory not found: {directory}&quot;
+        except Exception as e:
+            return f&quot;Error listing directory: {str(e)}&quot;
+</code></pre>
+<h2>Building a Research Agent</h2>
+<pre><code class="language-python">from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from langchain_community.utilities import SerpAPIWrapper
+from langchain_community.tools import DuckDuckGoSearchRun
+
+class ResearchAgent:
+    def __init__(self, api_key: str):
+        os.environ[&quot;OPENAI_API_KEY&quot;] = api_key
+        self.llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0)
+        self.setup_agent()
+    
+    def setup_agent(self):
+        # Define tools
+        self.search = DuckDuckGoSearchRun()
+        self.file_ops = FileOperations()
+        
+        tools = [
+            {
+                &quot;name&quot;: &quot;duckduckgo-search&quot;,
+                &quot;description&quot;: &quot;Search for information on the web&quot;,
+                &quot;func&quot;: self.search.run
+            },
+            {
+                &quot;name&quot;: &quot;read_file&quot;,
+                &quot;description&quot;: &quot;Read a file from disk&quot;,
+                &quot;func&quot;: self.file_ops.read_file
+            },
+            {
+                &quot;name&quot;: &quot;write_file&quot;,
+                &quot;description&quot;: &quot;Write content to a file&quot;,
+                &quot;func&quot;: self.file_ops.write_file
+            },
+            {
+                &quot;name&quot;: &quot;list_files&quot;,
+                &quot;description&quot;: &quot;List files in a directory&quot;,
+                &quot;func&quot;: self.file_ops.list_files
+            }
+        ]
+        
+        # Get prompt and create agent
+        prompt = hub.pull(&quot;hwchase17/openai-functions-agent&quot;)
+        self.agent = create_openai_functions_agent(self.llm, tools, prompt)
+        self.executor = AgentExecutor(agent=self.agent, tools=tools, verbose=True)
+    
+    def research_topic(self, topic: str, output_file: str = None) -&gt; dict:
+        &quot;&quot;&quot;Conduct research on a topic and optionally save results.&quot;&quot;&quot;
+        
+        task = f&quot;&quot;&quot;
+        Research the following topic thoroughly: {topic}
+        
+        Follow these steps:
+        1. Search for recent information about this topic
+        2. Find at least 3 credible sources
+        3. Summarize the key findings
+        4. Identify any controversies or differing viewpoints
+        5. Provide a comprehensive summary
+        &quot;&quot;&quot;
+        
+        result = self.executor.invoke({&quot;input&quot;: task})
+        
+        if output_file:
+            self.file_ops.write_file(output_file, result[&quot;output&quot;])
+        
+        return result
+</code></pre>
+<h2>Building a Task Management Agent</h2>
+<pre><code class="language-python">from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from langchain.tools import tool
+from datetime import datetime
+import json
+
+class TaskManager:
+    def __init__(self, api_key: str):
+        os.environ[&quot;OPENAI_API_KEY&quot;] = api_key
+        self.llm = ChatOpenAI(model=&quot;gpt-4&quot;, temperature=0)
+        self.tasks_file = &quot;tasks.json&quot;
+        self.load_tasks()
+        self.setup_agent()
+    
+    def load_tasks(self):
+        &quot;&quot;&quot;Load tasks from file.&quot;&quot;&quot;
+        try:
+            with open(self.tasks_file, &#39;r&#39;) as f:
+                self.tasks = json.load(f)
+        except FileNotFoundError:
+            self.tasks = []
+    
+    def save_tasks(self):
+        &quot;&quot;&quot;Save tasks to file.&quot;&quot;&quot;
+        with open(self.tasks_file, &#39;w&#39;) as f:
+            json.dump(self.tasks, f, indent=2)
+    
+    @tool
+    def add_task(self, title: str, description: str = &quot;&quot;, priority: str = &quot;medium&quot;, due_date: str = None) -&gt; str:
+        &quot;&quot;&quot;Add a new task to the task list.&quot;&quot;&quot;
+        task = {
+            &quot;id&quot;: len(self.tasks) + 1,
+            &quot;title&quot;: title,
+            &quot;description&quot;: description,
+            &quot;priority&quot;: priority,
+            &quot;due_date&quot;: due_date,
+            &quot;completed&quot;: False,
+            &quot;created_at&quot;: datetime.now().isoformat()
+        }
+        self.tasks.append(task)
+        self.save_tasks()
+        return f&quot;Task added: {title} (ID: {task[&#39;id&#39;]})&quot;
+    
+    @tool
+    def complete_task(self, task_id: int) -&gt; str:
+        &quot;&quot;&quot;Mark a task as completed.&quot;&quot;&quot;
+        for task in self.tasks:
+            if task[&quot;id&quot;] == task_id:
+                task[&quot;completed&quot;] = True
+                task[&quot;completed_at&quot;] = datetime.now().isoformat()
+                self.save_tasks()
+                return f&quot;Task completed: {task[&#39;title&#39;]}&quot;
+        return f&quot;Task not found: {task_id}&quot;
+    
+    @tool
+    def list_tasks(self, show_completed: bool = False) -&gt; str:
+        &quot;&quot;&quot;List all tasks.&quot;&quot;&quot;
+        tasks_to_show = [t for t in self.tasks if show_completed or not t[&quot;completed&quot;]]
+        if not tasks_to_show:
+            return &quot;No tasks found.&quot;
+        
+        lines = [&quot;Tasks:&quot;]
+        for task in tasks_to_show:
+            status = &quot;✓&quot; if task[&quot;completed&quot;] else &quot;○&quot;
+            due = f&quot; (Due: {task[&#39;due_date&#39;]})&quot; if task[&#39;due_date&#39;] else &quot;&quot;
+            lines.append(f&quot;{status} [{task[&#39;priority&#39;]}] {task[&#39;title&#39;]}{due}&quot;)
+        
+        return &quot;\n&quot;.join(lines)
+    
+    def setup_agent(self):
+        tools = [
+            {
+                &quot;name&quot;: &quot;add_task&quot;,
+                &quot;description&quot;: &quot;Add a new task with title, description, priority, and due date&quot;,
+                &quot;func&quot;: self.add_task
+            },
+            {
+                &quot;name&quot;: &quot;complete_task&quot;,
+                &quot;description&quot;: &quot;Mark a task as completed by its ID&quot;,
+                &quot;func&quot;: self.complete_task
+            },
+            {
+                &quot;name&quot;: &quot;list_tasks&quot;,
+                &quot;description&quot;: &quot;List all tasks, optionally showing completed ones&quot;,
+                &quot;func&quot;: self.list_tasks
+            }
+        ]
+        
+        prompt = hub.pull(&quot;hwchase17/openai-functions-agent&quot;)
+        self.agent = create_openai_functions_agent(self.llm, tools, prompt)
+        self.executor = AgentExecutor(agent=self.agent, tools=tools, verbose=True)
+    
+    def run(self, instruction: str) -&gt; str:
+        &quot;&quot;&quot;Execute a natural language instruction.&quot;&quot;&quot;
+        result = self.executor.invoke({&quot;input&quot;: instruction})
+        return result[&quot;output&quot;]
+</code></pre>
+<h2>Advanced Agent Patterns</h2>
+<h3>Using Conversational Memory</h3>
+<pre><code class="language-python">from langchain.memory import ConversationBufferMemory
+from langchain.agents import AgentExecutor
+
+memory = ConversationBufferMemory(memory_key=&quot;chat_history&quot;, return_messages=True)
+
+agent_executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    memory=memory,
+    verbose=True
+)
+</code></pre>
+<h3>Handling Errors Gracefully</h3>
+<pre><code class="language-python">from langchain.agents import AgentExecutor
+
+class SafeAgentExecutor:
+    def __init__(self, agent, tools, max_retries=3):
+        self.agent = agent
+        self.tools = tools
+        self.max_retries = max_retries
+    
+    def invoke(self, input_dict, max_iterations=10):
+        config = {
+            &quot;max_iterations&quot;: max_iterations,
+            &quot;early_stopping_method&quot;: &quot;generate&quot;
+        }
+        
+        try:
+            executor = AgentExecutor(
+                agent=self.agent,
+                tools=self.tools,
+                **config
+            )
+            return executor.invoke(input_dict)
+        except Exception as e:
+            return {&quot;output&quot;: f&quot;Error: {str(e)}&quot;, &quot;error&quot;: True}
+</code></pre>
+<h2>Best Practices for Agent Development</h2>
+<ol>
+<li><strong>Clear Tool Descriptions</strong>: Write detailed descriptions for each tool</li>
+<li><strong>Error Handling</strong>: Implement robust error handling in custom tools</li>
+<li><strong>Token Management</strong>: Monitor token usage and implement limits</li>
+<li><strong>Safety Controls</strong>: Add safeguards against harmful actions</li>
+<li><strong>Memory Management</strong>: Use appropriate memory types for your use case</li>
+<li><strong>Testing</strong>: Thoroughly test agent behavior with various inputs</li>
+<li><strong>Monitoring</strong>: Log agent actions and outputs for debugging</li>
+</ol>
+<h2>Conclusion</h2>
+<p>Building AI agents with LangChain opens up powerful possibilities for automation and complex task execution. Start with simple agents and gradually add complexity as you understand the patterns and behaviors that emerge.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

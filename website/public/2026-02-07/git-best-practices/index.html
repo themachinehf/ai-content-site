@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Best Practices for Teams | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Git Best Practices for Teams</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Git Best Practices for Teams</h1>
+<p>Good Git practices are essential for smooth team collaboration. Learn the workflows and habits that separate amateur from professional development.</p>
+<h2>Branching Strategy</h2>
+<h3>GitFlow Workflow</h3>
+<pre><code>main (production)
+  └── develop (integration)
+       ├── feature/user-auth
+       ├── feature/payment-system
+       └── hotfix/critical-bug
+</code></pre>
+<h3>Naming Conventions</h3>
+<pre><code class="language-bash"># Feature branches
+feature/user-authentication
+feature/add-payment-gateway
+
+# Bug fixes
+bugfix/login-error
+bugfix/header-alignment
+
+# Hotfixes
+hotfix/security-patch
+hotfix/critical-production-bug
+
+# Releases
+release/v1.0.0
+</code></pre>
+<h2>Essential Commands for Teams</h2>
+<h3>Daily Workflow</h3>
+<pre><code class="language-bash"># Start your day - sync with main
+git fetch origin
+git checkout develop
+git pull origin develop
+
+# Create feature branch
+git checkout -b feature/my-new-feature
+
+# Make commits (follow conventional commits)
+git commit -m &quot;feat: add user login functionality&quot;
+git commit -m &quot;fix: resolve login validation bug&quot;
+git commit -m &quot;docs: update README with setup instructions&quot;
+
+# Keep branch updated
+git rebase develop  # Preferred over merge for clean history
+</code></pre>
+<h3>Code Review Preparation</h3>
+<pre><code class="language-bash"># View your changes before creating PR
+git diff develop...HEAD
+
+# See all commits in your branch
+git log --oneline develop..HEAD
+
+# Interactive rebase for clean commit history
+git rebase -i develop
+</code></pre>
+<h2>Writing Good Commit Messages</h2>
+<h3>Conventional Commits Format</h3>
+<pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+
+&lt;body&gt;
+
+&lt;footer&gt;
+</code></pre>
+<h3>Examples</h3>
+<pre><code>feat(auth): add OAuth2 login support
+
+Implement Google and GitHub OAuth2 authentication with JWT tokens.
+
+- Add OAuth2 client configuration
+- Create login callback handlers
+- Generate JWT on successful auth
+
+Closes #123
+</code></pre>
+<pre><code>fix(database): resolve connection pool exhaustion
+
+Fixed connection pool not releasing connections properly after
+database queries timeout.
+
+Fixes #456
+</code></pre>
+<h2>Best Practices Summary</h2>
+<ol>
+<li><strong>Pull often, push often</strong> - Small, frequent updates reduce conflicts</li>
+<li><strong>Write meaningful commits</strong> - Each commit should represent one logical change</li>
+<li><strong>Use branches for everything</strong> - Never commit directly to main</li>
+<li><strong>Review before merging</strong> - Always create pull requests for code review</li>
+<li><strong>Delete merged branches</strong> - Keep repository clean</li>
+<li><strong>Use .gitignore properly</strong> - Prevent accidental commits of build artifacts</li>
+</ol>
+<h2>Common Workflows</h2>
+<h3>Feature Branch Workflow</h3>
+<pre><code class="language-bash"># 1. Create feature branch
+git checkout -b feature/new-dashboard
+
+# 2. Work and commit
+git add .
+git commit -m &quot;feat: add dashboard layout&quot;
+
+# 3. Push to remote
+git push -u origin feature/new-dashboard
+
+# 4. Create PR, get reviews, merge
+</code></pre>
+<h3>Hotfix Workflow</h3>
+<pre><code class="language-bash"># 1. Create hotfix from main
+git checkout -b hotfix/critical-bug main
+
+# 2. Fix and commit
+git commit -m &quot;fix: patch security vulnerability&quot;
+
+# 3. Merge to both main and develop
+git checkout main &amp;&amp; git merge hotfix/critical-bug
+git checkout develop &amp;&amp; git merge hotfix/critical-bug
+
+# 4. Delete hotfix branch
+git branch -d hotfix/critical-bug
+</code></pre>
+<h2>Conclusion</h2>
+<p>Good Git practices lead to better collaboration, cleaner history, and easier debugging. Make these habits part of your daily routine.</p>
+<hr>
+<p><em>Happy coding! 🔀</em></p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

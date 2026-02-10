@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python List Comprehensions Explained | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Python List Comprehensions Explained</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Python List Comprehensions Explained</h1>
+<p>List comprehensions are a Pythonic way to create lists. Learn how to write concise, readable code using this powerful feature.</p>
+<h2>Basic Syntax</h2>
+<h3>Traditional Loop</h3>
+<pre><code class="language-python">numbers = [1, 2, 3, 4, 5]
+squares = []
+
+for n in numbers:
+    squares.append(n ** 2)
+
+# Result: [1, 4, 9, 16, 25]
+</code></pre>
+<h3>List Comprehension</h3>
+<pre><code class="language-python">numbers = [1, 2, 3, 4, 5]
+squares = [n ** 2 for n in numbers]
+
+# Result: [1, 4, 9, 16, 25]
+</code></pre>
+<h3>Syntax Breakdown</h3>
+<pre><code class="language-python">[expression for item in iterable if condition]
+# [      n**2      for n in numbers    if n &gt; 2]
+#   ↑              ↑              ↑
+#  output      input loop      filter
+</code></pre>
+<h2>Advanced Examples</h2>
+<h3>With Conditions</h3>
+<pre><code class="language-python"># Filter even numbers
+evens = [n for n in range(1, 21) if n % 2 == 0]
+# [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+
+# Transform with condition
+results = [&quot;even&quot; if n % 2 == 0 else &quot;odd&quot; for n in range(1, 6)]
+# [&#39;odd&#39;, &#39;even&#39;, &#39;odd&#39;, &#39;even&#39;, &#39;odd&#39;]
+</code></pre>
+<h3>Nested Loops</h3>
+<pre><code class="language-python"># Traditional nested loops
+matrix = []
+for i in range(3):
+    row = []
+    for j in range(3):
+        row.append(i * j)
+    matrix.append(row)
+
+# List comprehension
+matrix = [[i * j for j in range(3)] for i in range(3)]
+# [[0, 0, 0], [0, 1, 2], [0, 2, 4]]
+</code></pre>
+<h3>With Functions</h3>
+<pre><code class="language-python">def is_prime(n):
+    if n &lt; 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+primes = [n for n in range(1, 51) if is_prime(n)]
+# [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+</code></pre>
+<h2>Dictionary and Set Comprehensions</h2>
+<h3>Dictionary Comprehension</h3>
+<pre><code class="language-python"># Create square dictionary
+squares_dict = {n: n**2 for n in range(1, 6)}
+# {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
+
+# Swap keys and values
+original = {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3}
+swapped = {v: k for k, v in original.items()}
+# {1: &#39;a&#39;, 2: &#39;b&#39;, 3: &#39;c&#39;}
+</code></pre>
+<h3>Set Comprehension</h3>
+<pre><code class="language-python"># Unique squares
+numbers = [1, 2, 2, 3, 3, 3, 4]
+unique_squares = {n**2 for n in numbers}
+# {1, 4, 9, 16}
+</code></pre>
+<h2>When to Use Comprehensions</h2>
+<h3>Good Use Cases</h3>
+<pre><code class="language-python"># Filtering and transforming
+[x * 2 for x in data if x &gt; 0]
+
+# Creating mappings
+{word: len(word) for word in words}
+
+# Extracting specific data
+[user[&#39;email&#39;] for user in users if user[&#39;active&#39;]]
+</code></pre>
+<h3>When NOT to Use Comprehensions</h3>
+<pre><code class="language-python"># Too complex - use a regular loop
+[complex_function(x) for x in data if 
+ condition1(x) and condition2(x) and 
+ some_other_check(x)]  # ❌ Too long!
+
+# Better:
+results = []
+for x in data:
+    if condition1(x) and condition2(x) and some_other_check(x):
+        results.append(complex_function(x))
+</code></pre>
+<h2>Generator Expressions</h2>
+<p>For large datasets, use generators to save memory:</p>
+<pre><code class="language-python"># List comprehension (creates full list)
+squares = [x**2 for x in range(1000000)]  # Uses lots of memory
+
+# Generator expression (lazy evaluation)
+squares_gen = (x**2 for x in range(1000000))  # Memory efficient
+
+# Use with sum()
+total = sum(x**2 for x in range(1000))
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Keep it simple</strong> - If it gets too complex, use a loop</li>
+<li><strong>Avoid side effects</strong> - List comprehensions should be pure</li>
+<li><strong>Use for transformation</strong> - Filter + transform is their strength</li>
+<li><strong>Consider readability</strong> - Write for humans first</li>
+</ol>
+<h2>Conclusion</h2>
+<p>List comprehensions are a powerful Python feature. Use them wisely to write clean, Pythonic code.</p>
+<hr>
+<p><em>Happy coding! 🐍</em></p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>

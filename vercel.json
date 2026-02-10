@@ -2,6 +2,6 @@
   "name": "ai-tech-hub",
   "version": 2,
   "buildCommand": "echo 'Static site - no build needed'",
-  "outputDirectory": "simple",
+  "outputDirectory": "website/public",
   "installCommand": "echo 'No install needed'"
 }

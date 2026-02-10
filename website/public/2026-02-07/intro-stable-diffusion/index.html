@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Stable Diffusion | THE MACHINE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 18px;
+            image-rendering: pixelated;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .back {
+            margin-bottom: 32px;
+        }
+        
+        .back a {
+            color: #006600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #1a3a1a;
+            display: inline-block;
+        }
+        
+        .back a:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #00ff00;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: #006600;
+            font-size: 0.85rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a3a1a;
+        }
+        
+        .content {
+            font-size: 1rem;
+        }
+        
+        .content h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #00ff00;
+            margin: 36px 0 16px;
+            letter-spacing: 1px;
+            border-left: 3px solid #00ff00;
+            padding-left: 12px;
+        }
+        
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #00cc00;
+            margin: 28px 0 12px;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #00cc00;
+        }
+        
+        .content a {
+            color: #00ff00;
+            text-decoration: none;
+            border-bottom: 1px dashed #004400;
+        }
+        
+        .content a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom-style: solid;
+        }
+        
+        .content code {
+            background: #0d1a0d;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            color: #00ff00;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre {
+            background: #050a05;
+            padding: 20px;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 24px 0;
+            border: 1px solid #1a3a1a;
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: #00ff00;
+        }
+        
+        .content ul, .content ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        
+        .content li {
+            margin: 10px 0;
+            color: #00cc00;
+            list-style-type: square;
+        }
+        
+        .content li::marker {
+            color: #006600;
+        }
+        
+        .content blockquote {
+            border-left: 3px solid #006600;
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: #050a05;
+            color: #008800;
+        }
+        
+        .content hr {
+            border: none;
+            border-top: 1px solid #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border: 1px solid #1a3a1a;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="back">
+            <a href="/">< RETURN</a>
+        </nav>
+        
+        <article>
+            <h1>Introduction to Stable Diffusion</h1>
+            <p class="meta">> TIMESTAMP: 2026-02-07 // STATUS: ARCHIVED</p>
+            
+            <div class="content">
+<h1>Introduction to Stable Diffusion</h1>
+<p>Stable Diffusion has revolutionized AI image generation. This guide covers the fundamentals and practical applications.</p>
+<h2>What is Stable Diffusion?</h2>
+<p>Stable Diffusion is a latent diffusion model (LDM) that generates images from text descriptions (prompts). Key characteristics:</p>
+<ul>
+<li><strong>Text-to-Image</strong>: Generate images from natural language prompts</li>
+<li><strong>Open Source</strong>: Free to use and modify</li>
+<li><strong>Efficient</strong>: Runs on consumer hardware</li>
+<li><strong>Versatile</strong>: Supports various generation modes</li>
+</ul>
+<h2>How Diffusion Works</h2>
+<p>Diffusion models work through two processes:</p>
+<ol>
+<li><strong>Forward Process</strong>: Gradually adds noise to an image until it becomes pure noise</li>
+<li><strong>Reverse Process</strong>: Gradually removes noise to reconstruct an image from pure noise</li>
+</ol>
+<h3>Mathematical Foundation</h3>
+<pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class DiffusionProcess:
+    def __init__(self, timesteps=1000, beta_start=1e-4, beta_end=0.02):
+        self.timesteps = timesteps
+        self.beta_start = beta_start
+        self.beta_end = beta_end
+        
+        # Define noise schedule
+        self.beta = torch.linspace(beta_start, beta_end, timesteps)
+        self.alpha = 1 - self.beta
+        self.alpha_cumprod = torch.cumprod(self.alpha, dim=0)
+    
+    def add_noise(self, x_0, t, noise):
+        &quot;&quot;&quot;Forward process: add noise to image&quot;&quot;&quot;
+        alpha_t = self.alpha_cumprod[t].view(-1, 1, 1, 1)
+        return torch.sqrt(alpha_t) * x_0 + torch.sqrt(1 - alpha_t) * noise
+    
+    def denoise_step(self, model, x_t, t):
+        &quot;&quot;&quot;Reverse process: predict and remove noise&quot;&quot;&quot;
+        noise_pred = model(x_t, t)
+        alpha_t = self.alpha[t].view(-1, 1, 1, 1)
+        alpha_cumprod_t = self.alpha_cumprod[t].view(-1, 1, 1, 1)
+        
+        # Predict noise and remove it
+        pred_x0 = (x_t - torch.sqrt(1 - alpha_cumprod_t) * noise_pred) / torch.sqrt(alpha_cumprod_t)
+        return pred_x0
+</code></pre>
+<h2>Using Stable Diffusion</h2>
+<h3>Setting Up</h3>
+<pre><code class="language-bash"># Install required packages
+pip install torch torchvision
+pip install diffusers transformers accelerate scipy safetensors
+
+# For GPU support, ensure CUDA is available
+import torch
+print(f&quot;CUDA available: {torch.cuda.is_available()}&quot;)
+print(f&quot;Device: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else &#39;CPU&#39;}&quot;)
+</code></pre>
+<h3>Basic Image Generation</h3>
+<pre><code class="language-python">from diffusers import StableDiffusionPipeline
+import torch
+
+# Load pre-trained model
+model_id = &quot;stable-diffusion-xl-base-1.0&quot;
+pipe = StableDiffusionPipeline.from_pretrained(
+    model_id,
+    torch_dtype=torch.float16,
+    use_safetensors=True
+)
+pipe = pipe.to(&quot;cuda&quot;)
+
+# Generate image from prompt
+prompt = &quot;A mystical forest with glowing mushrooms, digital art style&quot;
+image = pipe(
+    prompt=prompt,
+    height=768,
+    width=768,
+    num_inference_steps=50,
+    guidance_scale=7.5,
+    negative_prompt=&quot;blurry, low quality, distorted&quot;
+).images[0]
+
+# Save image
+image.save(&quot;generated_image.png&quot;)
+</code></pre>
+<h3>Advanced Generation Techniques</h3>
+<pre><code class="language-python">class AdvancedStableDiffusion:
+    def __init__(self, model_id=&quot;stable-diffusion-xl-base-1.0&quot;):
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            model_id,
+            torch_dtype=torch.float16,
+            use_safetensors=True
+        ).to(&quot;cuda&quot;)
+    
+    def generate_with_styles(self, prompt, style=&quot;realistic&quot;):
+        &quot;&quot;&quot;Generate images with specific art styles&quot;&quot;&quot;
+        styles = {
+            &quot;realistic&quot;: &quot;&quot;,
+            &quot;anime&quot;: &quot;anime style, manga illustration&quot;,
+            &quot;oil_painting&quot;: &quot;oil painting style, brushstrokes visible&quot;,
+            &quot;watercolor&quot;: &quot;watercolor painting style, soft edges&quot;,
+            &quot;cyberpunk&quot;: &quot;cyberpunk aesthetic, neon lights&quot;,
+            &quot;fantasy&quot;: &quot;fantasy art style, epic scene&quot;
+        }
+        
+        enhanced_prompt = f&quot;{prompt}, {styles.get(style, &#39;&#39;)}&quot;
+        
+        return self.pipe(enhanced_prompt).images[0]
+    
+    def generate_variations(self, prompt, num_variations=4):
+        &quot;&quot;&quot;Generate multiple variations&quot;&quot;&quot;
+        images = []
+        for i in range(num_variations):
+            # Add slight variation to seed
+            seed = torch.randint(0, 2**32, (1,)).item()
+            generator = torch.Generator(device=&quot;cuda&quot;).manual_seed(seed)
+            
+            image = self.pipe(
+                prompt=prompt,
+                generator=generator,
+                num_inference_steps=50
+            ).images[0]
+            images.append(image)
+        
+        return images
+    
+    def img2img(self, input_image, prompt, strength=0.5):
+        &quot;&quot;&quot;Transform an existing image&quot;&quot;&quot;
+        return self.pipe.img2img(
+            image=input_image,
+            prompt=prompt,
+            strength=strength,
+            guidance_scale=7.5
+        ).images[0]
+    
+    def inpaint(self, image, mask, prompt):
+        &quot;&quot;&quot;Fill in masked regions&quot;&quot;&quot;
+        return self.pipe.inpaint(
+            image=image,
+            mask_image=mask,
+            prompt=prompt,
+            num_inference_steps=50
+        ).images[0]
+    
+    def create_panorama(self, prompt, width=2048):
+        &quot;&quot;&quot;Generate wide panorama images&quot;&quot;&quot;
+        return self.pipe(
+            prompt=prompt,
+            width=width,
+            height=512,
+            num_inference_steps=50
+        ).images[0]
+</code></pre>
+<h3>Custom Model Loading</h3>
+<pre><code class="language-python">from diffusers import StableDiffusionPipeline, UNet2DConditionModel
+from transformers import CLIPTextModel
+import torch
+
+class CustomStableDiffusion:
+    def __init__(self, model_path):
+        # Load custom trained components
+        text_encoder = CLIPTextModel.from_pretrained(model_path, subfolder=&quot;text_encoder&quot;)
+        unet = UNet2DConditionModel.from_pretrained(model_path, subfolder=&quot;unet&quot;)
+        
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            model_path,
+            text_encoder=text_encoder,
+            unet=unet,
+            torch_dtype=torch.float16
+        ).to(&quot;cuda&quot;)
+    
+    def generate(self, prompt, **kwargs):
+        return self.pipe(prompt, **kwargs).images[0]
+</code></pre>
+<h2>Prompt Engineering</h2>
+<h3>Basic Structure</h3>
+<pre><code>[Subject], [Style], [Lighting], [Composition], [Quality tags]
+</code></pre>
+<h3>Examples</h3>
+<pre><code class="language-python">prompts = {
+    &quot;portrait&quot;: &quot;professional portrait photo of a woman, natural lighting, &quot;
+               &quot;shallow depth of field, 85mm lens, 4k resolution, &quot;
+               &quot;captured with Canon R5&quot;,
+    
+    &quot;landscape&quot;: &quot;epic mountain landscape at golden hour, dramatic clouds, &quot;
+                &quot;alpine lake reflection, photorealistic, 8k, detailed&quot;,
+    
+    &quot;concept_art&quot;: &quot;futuristic city concept art, cyberpunk aesthetic, &quot;
+                   &quot;blade runner style, matte painting, detailed architecture&quot;,
+    
+    &quot;product&quot;: &quot;sleek smartphone product photography, studio lighting, &quot;
+              &quot;minimalist background, commercial photography, high resolution&quot;
+}
+</code></pre>
+<h3>Negative Prompts</h3>
+<pre><code class="language-python">negative_prompt = &quot;&quot;&quot;
+blurry, low quality, distorted, deformed, ugly, 
+disfigured, bad anatomy, extra limbs, watermark, 
+signature, text, logo, username, artist name
+&quot;&quot;&quot;
+</code></pre>
+<h2>Training Your Own Model</h2>
+<h3>Dreambooth Training</h3>
+<pre><code class="language-python">from diffusers import StableDiffusionPipeline, DDPMScheduler
+from transformers import CLIPTextModel
+import torch
+from torch.utils.data import Dataset, DataLoader
+
+class CustomDataset(Dataset):
+    def __init__(self, image_paths, tokenizer, size=512):
+        self.image_paths = image_paths
+        self.tokenizer = tokenizer
+        self.size = size
+    
+    def __len__(self):
+        return len(self.image_paths)
+    
+    def __getitem__(self, idx):
+        # Load and preprocess image
+        image = load_image(self.image_paths[idx])
+        image = resize(image, self.size)
+        
+        # Get text encoding
+        text = f&quot;a photo of sks person&quot;  # Unique identifier
+        encoding = self.tokenizer(
+            text,
+            padding=&quot;max_length&quot;,
+            truncation=True,
+            max_length=77,
+            return_tensors=&quot;pt&quot;
+        )
+        
+        return {
+            &quot;pixel_values&quot;: image,
+            &quot;input_ids&quot;: encoding[&quot;input_ids&quot;].squeeze()
+        }
+
+# Training configuration
+training_config = {
+    &quot;learning_rate&quot;: 1e-6,
+    &quot;batch_size&quot;: 1,
+    &quot;max_train_steps&quot;: 1000,
+    &quot;save_steps&quot;: 100,
+    &quot;gradient_checkpointing&quot;: True,
+    &quot;mixed_precision&quot;: &quot;fp16&quot;
+}
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Use Appropriate Steps</strong>: 30-50 steps for most cases</li>
+<li><strong>Guidance Scale</strong>: 7-12 works well for most prompts</li>
+<li><strong>Image Size</strong>: Use multiples of 64 (512x512, 768x768)</li>
+<li><strong>Quality Tags</strong>: Add &quot;masterpiece&quot;, &quot;high quality&quot;</li>
+<li><strong>Negative Prompts</strong>: Exclude unwanted features</li>
+<li><strong>Batch Generation</strong>: Generate multiple images for selection</li>
+<li><strong>Hardware</strong>: Use GPU for faster generation</li>
+</ol>
+<h2>Common Issues and Solutions</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Blurry images</td>
+<td>Increase inference steps, reduce guidance scale</td>
+</tr>
+<tr>
+<td>Distorted faces</td>
+<td>Use face restoration model, adjust prompt</td>
+</tr>
+<tr>
+<td>Color banding</td>
+<td>Use higher color depth, add dithering</td>
+</tr>
+<tr>
+<td>Slow generation</td>
+<td>Use smaller model, optimize memory</td>
+</tr>
+<tr>
+<td>Out of memory</td>
+<td>Use attention slicing, reduce batch size</td>
+</tr>
+</tbody></table>
+<h2>Conclusion</h2>
+<p>Stable Diffusion opens up incredible possibilities for image generation. Start with simple prompts and gradually explore advanced techniques like fine-tuning, img2img, and inpainting to unlock the full potential of AI image generation.</p>
+
+            </div>
+        </article>
+    </div>
+</body>
+</html>
